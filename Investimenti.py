@@ -6,17 +6,13 @@ st.set_page_config(page_title="Calcolatore Investimenti")
 st.title("💰 Calcolatore di Investimenti 💰")
 
 # Input utente in due colonne
-col1, col2 = st.columns(2)
 
-with col1:
-    capitale_iniziale = st.number_input("Capitale iniziale (€):", min_value=0, value=1000, step=100)
-    contributo_mensile = st.number_input("Contributo mensile (€):", min_value=0, value=100, step=10)
-    tasso_interesse = st.slider("Tasso di interesse annuale (%):", 0.0, 20.0, 5.0, 0.1)
-
-with col2:
-    anni = st.slider("Periodo (anni):", 1, 50, 10)
-    inflazione = st.slider("Inflazione annuale (%):", 0.0, 10.0, 2.0, 0.1)
-    freq = st.selectbox("Frequenza capitalizzazione:", ["Annuale", "Semestrale", "Trimestrale", "Mensile"])
+capitale_iniziale = st.number_input("Capitale iniziale (€):", min_value=0, value=1000, step=100)
+contributo_mensile = st.number_input("Contributo mensile (€):", min_value=0, value=100, step=10)
+tasso_interesse = st.slider("Tasso di interesse annuale (%):", 0.0, 20.0, 5.0, 0.1)
+anni = st.slider("Periodo (anni):", 1, 50, 10)
+inflazione = st.slider("Inflazione annuale (%):", 0.0, 10.0, 2.0, 0.1)
+freq = st.selectbox("Frequenza capitalizzazione:", ["Annuale", "Semestrale", "Trimestrale", "Mensile"])
 
 # Calcolo periodi
 periodi_per_anno = {"Annuale": 1, "Semestrale": 2, "Trimestrale": 4, "Mensile": 12}[freq]

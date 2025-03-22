@@ -43,13 +43,11 @@ valore_reale = valori_reali[-1]
 contributo_totale = capitale_iniziale + (contributo_periodo * periodi_totali)
 interesse_guadagnato = valore_finale - contributo_totale
 
-col1, col2 = st.columns(2)
-with col1:
-    st.metric("Valore finale", f"€{valore_finale:,.2f}")
-    st.metric("Valore reale (con inflazione)", f"€{valore_reale:,.2f}")
-with col2:
-    st.metric("Totale contributi", f"€{contributo_totale:,.2f}")
-    st.metric("Interesse guadagnato", f"€{interesse_guadagnato:,.2f}")
+st.metric("Valore finale", f"€{valore_finale:,.2f}")
+st.metric("Valore reale (con inflazione)", f"€{valore_reale:,.2f}")
+
+st.metric("Totale contributi", f"€{contributo_totale:,.2f}")
+st.metric("Interesse guadagnato", f"€{interesse_guadagnato:,.2f}")
 
 # Grafico
 st.subheader("Grafico dell'investimento")

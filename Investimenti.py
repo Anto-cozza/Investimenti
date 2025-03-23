@@ -48,7 +48,7 @@ st.metric("Interest earned", f"€{Interest_earned:,.2f}")
 # Creating the investment graph
 st.subheader("Investment graph")
 fig, ax = plt.subplots(figsize=(10, 5))
-x = [i / Periods_per_year for i in range(Total_periods + 1)]
+x = list(range(Years + 1))
 
 # Adding the three lines to the graph
 ax.plot(x, Values, label="Nominal value", color="blue", linewidth=2)

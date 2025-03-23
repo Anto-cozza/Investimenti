@@ -1,75 +1,72 @@
 import streamlit as st
 import matplotlib.pyplot as plt
 
-st.set_page_config(page_title="Calcolatore Investimenti")
+st.title("💰 Compound interest calculation 💰")
 
-st.title("💰 Calcolatore di Investimenti 💰")
+# User input for investment parameters
+Initial_capital = st.number_input("Initial capital (€):", min_value=0, value=1000, step=100)
+Monthly_contribution = st.number_input("Monthly contribution (€):", min_value=0, value=100, step=10)
+Annual_interest_rate = st.slider("Annual interest rate (%):", 0.0, 20.0, 5.0, 0.1)
+Years = st.slider("Period (Years):", 1, 50, 10)
+Inflation = st.slider("Annual inflation (%):", 0.0, 10.0, 2.0, 0.1)
+Freq = st.selectbox("Frequency capitalization:", ["Annual", "Semester", "Quarterly", "Monthly"])
 
-# Input utente in due colonne
+# Calculations for investment periods
+Periods_per_year = {"Annual": 1, "Semester": 2, "Quarterly": 4, "Monthly": 12}[Freq]
+Rate_period = Annual_interest_rate / 100 / Periods_per_year
+Inflation_period = Inflation / 100 / Periods_per_year
+Total_periods = Years * Periods_per_year
+Contribution_period = Monthly_contribution * 12 / Periods_per_year
 
-capitale_iniziale = st.number_input("Capitale iniziale (€):", min_value=0, value=1000, step=100)
-contributo_mensile = st.number_input("Contributo mensile (€):", min_value=0, value=100, step=10)
-tasso_interesse = st.slider("Tasso di interesse annuale (%):", 0.0, 20.0, 5.0, 0.1)
-anni = st.slider("Periodo (anni):", 1, 50, 10)
-inflazione = st.slider("Inflazione annuale (%):", 0.0, 10.0, 2.0, 0.1)
-freq = st.selectbox("Frequenza capitalizzazione:", ["Annuale", "Semestrale", "Trimestrale", "Mensile"])
+# Calculation of investment values over time
+Values = [Initial_capital] # Investment history
+Value = Initial_capital
 
-# Calcolo periodi
-periodi_per_anno = {"Annuale": 1, "Semestrale": 2, "Trimestrale": 4, "Mensile": 12}[freq]
-tasso_periodo = tasso_interesse / 100 / periodi_per_anno
-inflazione_periodo = inflazione / 100 / periodi_per_anno
-periodi_totali = anni * periodi_per_anno
-contributo_periodo = contributo_mensile * 12 / periodi_per_anno
+# Cycle repeating for each investment period.
+for _ in range(Total_periods):
+    Interest = Value * Rate_period
+    Value += Interest + Contribution_period
+    Values.append(Value)
 
-# Calcolo valori
-valori = [capitale_iniziale]
-valore = capitale_iniziale
+# Calculation of real values considering inflation
+Real_values = [Values[i] * (1 - Inflation_period) ** i for i in range(len(Values))]
 
-for _ in range(periodi_totali):
-    interesse = valore * tasso_periodo
-    valore += interesse + contributo_periodo
-    valori.append(valore)
+# Calculation of total contributions over time
+Contributions = [Initial_capital + Contribution_period * i for i in range(Total_periods + 1)]
 
-# Calcolo valori reali (con inflazione)
-valori_reali = [valori[i] * (1 - inflazione_periodo) ** i for i in range(len(valori))]
+# Displaying key results
+st.header("Results")
+Final_value = Values[-1]
+Real_value = Real_values[-1]
+Total_contribution = Initial_capital + (Contribution_period * Total_periods)
+Interest_earned = Final_value - Total_contribution
+st.metric("Final value", f"€{Final_value:,.2f}")
+st.metric("Real value (with inflation)", f"€{Real_value:,.2f}")
+st.metric("Total contribution", f"€{Total_contribution:,.2f}")
+st.metric("Interest earned", f"€{Interest_earned:,.2f}")
 
-# Calcolo contributi totali
-contributi = [capitale_iniziale + contributo_periodo * i for i in range(periodi_totali + 1)]
-
-# Risultati principali
-st.header("Risultati")
-valore_finale = valori[-1]
-valore_reale = valori_reali[-1]
-contributo_totale = capitale_iniziale + (contributo_periodo * periodi_totali)
-interesse_guadagnato = valore_finale - contributo_totale
-
-st.metric("Valore finale", f"€{valore_finale:,.2f}")
-st.metric("Valore reale (con inflazione)", f"€{valore_reale:,.2f}")
-
-st.metric("Totale contributi", f"€{contributo_totale:,.2f}")
-st.metric("Interesse guadagnato", f"€{interesse_guadagnato:,.2f}")
-
-# Grafico
-st.subheader("Grafico dell'investimento")
+# Creating the investment graph
+st.subheader("Investment graph")
 fig, ax = plt.subplots(figsize=(10, 5))
-x = [i / periodi_per_anno for i in range(periodi_totali + 1)]
+x = [i / Periods_per_year for i in range(Total_periods + 1)]
 
-ax.plot(x, valori, label="Valore nominale", color="blue", linewidth=2)
-ax.plot(x, valori_reali, label="Valore reale", color="green", linewidth=2)
-ax.plot(x, contributi, label="Contributi", color="red", linestyle="--")
+# Adding the three lines to the graph
+ax.plot(x, Values, label="Nominal value", color="blue", linewidth=2)
+ax.plot(x, Real_values, label="Real value", color="green", linewidth=2)
+ax.plot(x, Contributions, label="Contributions", color="red", linestyle="--")
 
-ax.set_xlabel("Anni")
-ax.set_ylabel("Valore (€)")
+# Chart configuration
+ax.set_xlabel("Years")
+ax.set_ylabel("Value (€)")
 ax.grid(True, alpha=0.3)
 ax.legend()
 
 st.pyplot(fig)
 
-# Suggerimenti
-st.subheader("Suggerimenti per l'investimento")
+st.subheader("Investment tips")
 st.info("""
-- Un aumento di 1% nel tasso di rendimento può avere un impatto significativo sul lungo termine.
-- Iniziare a investire presto è spesso più importante del tasso di rendimento.
-- L'inflazione riduce il potere d'acquisto nel tempo, quindi considera sempre il valore reale.
-- Diversificare gli investimenti può aiutare a gestire i rischi.
+- A 1% increase in the rate of return can have a significant impact in the long run.
+- Starting investing early is often more important than the rate of return.
+- Inflation reduces purchasing power over time, so always consider the real value.
+- Diversifying investments can help manage risk.
 """)
